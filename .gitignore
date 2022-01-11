@@ -1,1 +1,5 @@
 /target
+hyperfine*
+*.fastq
+*.fastq.gz
+.Rhistory
