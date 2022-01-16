@@ -101,8 +101,8 @@ fn main(){
 
     } else if matches.is_present("qual") {
         while let Some(record) = records.iter_record().unwrap() {
-            let qscore = qscore_probs( record.qual().as_bytes() ) / record.len() as f32;
-            println!("{:.4}", -10.0 * qscore.log10());
+            let mean_prob = qscore_probs( record.qual().as_bytes() ) / record.len() as f32;
+            println!("{:.4}", -10.0 * mean_prob.log10()); // convert to phred score
         }
         process::exit(0);
 
@@ -132,6 +132,6 @@ fn main(){
         let max_len = len_vector.iter().max().unwrap();
 
         println!("reads\tbases\tn_bases\tmin_len\tmax_len\tN50\tQ20_percent");
-        println!("{}\t{}\t{}\t{}\t{}\t{}\t{}", reads, bases, num_n, min_len, max_len, n50, q20);
+        println!("{}\t{}\t{}\t{}\t{}\t{}\t{:.2}", reads, bases, num_n, min_len, max_len, n50, q20);
     }
 }
