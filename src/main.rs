@@ -4,7 +4,7 @@ use kseq::parse_path;
 extern crate clap;
 use clap::{App, Arg, ArgGroup};
 
-fn get_n_bases(seq: &[u8]) -> i32 {
+fn get_n_bases(seq: &[u8]) -> i64 {
     let mut n = 0;
     for s in seq {
         if s == &78u8 || s == &110u8 {
@@ -109,7 +109,7 @@ fn main(){
     } else if matches.is_present("table") {
         let mut reads: i64 = 0;
         let mut bases: i64 = 0;
-        let mut num_n: i32 = 0;
+        let mut num_n: i64 = 0;
         let mut qual20: i64 = 0;
         //let mut qual30: i64 = 0;
         let mut len_vector: Vec<i64> = Vec::new();
