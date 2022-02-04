@@ -3,3 +3,4 @@ hyperfine*
 *.fastq
 *.fastq.gz
 .Rhistory
+rplot.R
