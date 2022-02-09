@@ -4,3 +4,4 @@ hyperfine*
 *.fastq.gz
 .Rhistory
 rplot.R
+.DS_store
