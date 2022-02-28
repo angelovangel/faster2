@@ -52,8 +52,10 @@ fn main(){
 
     } else if matches.is_present("qual") {
         while let Some(record) = records.iter_record().unwrap() {
-            let mean_prob = faster2::qscore_probs( record.qual().as_bytes() ) / record.len() as f32;
-            println!("{:.4}", -10.0 * mean_prob.log10()); // convert to phred score
+            //let mean_prob = faster2::qscore_probs( record.qual().as_bytes() ) / record.len() as f32;
+            //println!("{:.4}", -10.0 * mean_prob.log10()); // convert to phred score
+            let mean_prob = faster2::phred_gm( record.qual().as_bytes() );
+            println!("{:.4}", mean_prob);
         }
         process::exit(0);
 
