@@ -8,5 +8,4 @@ edition = "2021"
 [dependencies]
 kseq = "0.2.6"
 clap = "~2.33.3"
-rand = "0.7.3"
-regex = "1"
+
