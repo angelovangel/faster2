@@ -15,30 +15,36 @@ fn main(){
         .about("fast statistics and manipulation of a fastx file")
         
         .arg(Arg::with_name("len")
-        .long("len")
-        .short("l")
-        //.takes_value(true)
-        .required(false)
-        .help("Output read lengths"))
+            .long("len")
+            .short("l")
+            //.takes_value(true)
+            .required(false)
+            .help("Output read lengths"))
+
+        .arg(Arg::with_name("gc")
+            .long("gc")
+            .short("g")
+            .required(false)
+            .help("output GC content per read"))
         
         .arg(Arg::with_name("qual")
-        .long("qual")
-        .short("q")
-        .required(false)
-        .takes_value(false)
-        .help("Output 'average' q-score per read"))
+            .long("qual")
+            .short("q")
+            .required(false)
+            .takes_value(false)
+            .help("Output 'average' q-score per read"))
         
         .arg(Arg::with_name("table")
-        .long("table")
-        .short("t")
-        .takes_value(false)
-        .required(false))
+            .long("table")
+            .short("t")
+            .takes_value(false)
+            .required(false))
         
         .arg(Arg::with_name("INPUT")
-                            .help("Path to a fastq file")
-                            .required(true)
-                            .index(1))
-        .group(ArgGroup::with_name("group").required(true).args(&["table", "len", "qual"]))
+            .help("Path to a fastq file")
+            .required(true)
+            .index(1))
+        .group(ArgGroup::with_name("group").required(true).args(&["table", "len", "qual", "gc"]))
         .get_matches();
 	
     let infile = matches.value_of("INPUT").unwrap().to_string();
@@ -59,6 +65,13 @@ fn main(){
         }
         process::exit(0);
 
+    } else if matches.is_present("gc") {
+        while let Some(record) = records.iter_record().unwrap() {
+            let gc_content = faster2::get_gc_content(record.seq().as_bytes() );
+            println!( "{:.4}", gc_content )
+        }
+        process::exit(0);
+    
     } else if matches.is_present("table") {
         let mut reads: i64 = 0;
         let mut bases: i64 = 0;
