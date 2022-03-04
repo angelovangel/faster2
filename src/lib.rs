@@ -2,7 +2,7 @@
 pub fn get_n_bases(seq: &[u8]) -> i64 {
     let mut n = 0;
     for s in seq {
-        if s == &78u8 || s == &110u8 {
+        if matches!(s, &78u8 | &110u8) { // N or n
             n += 1;
         }
     }
@@ -13,7 +13,7 @@ pub fn get_gc_content(seq: &[u8]) -> f32 {
     
 let mut n: i64 = 0;
     for s in seq {
-        if s == &103u8 || s == &71u8 || s == &99u8 || s == &67u8 {
+        if matches!(s, &103u8 | &71u8 |  &99u8 | &67u8) { //G, g, C or c
             n += 1;
         }
     }
