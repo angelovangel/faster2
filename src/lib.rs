@@ -34,17 +34,18 @@ pub fn get_qual_bases(q: &[u8], qx: u8) -> i64 {
 // to get mean of q scores from a record - first convert to prob, calc mean, then back to phred
 // this fn reads phred and converts to probs and returns their sum
 //
-//pub fn qscore_probs(q: &[u8]) -> f32 {
-//    let mut qprob_sum = 0.0;
-//    for &item in q.iter() {
-//        let phred = *&item as f32 - 33.0;
-//        let prob = 10.0_f32.powf(-phred / 10.0);
-//        qprob_sum += prob
-//    }
-//    qprob_sum
-//}
+pub fn qscore_probs(q: &[u8]) -> f32 {
+    let mut qprob_sum = 0.0;
+    for &item in q.iter() {
+        let phred = *&item as f32 - 33.0;
+        let prob = 10.0_f32.powf(-phred / 10.0);
+        qprob_sum += prob
+    }
+    qprob_sum
+}
 
 // get geometric mean from phred scores
+// not used, this is wrong
 pub fn phred_gm(q: &[u8]) -> f64 {
     let mut phred_product = 0.;
     
