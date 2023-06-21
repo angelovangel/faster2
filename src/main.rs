@@ -10,7 +10,7 @@ use faster2;
 fn main(){
 
     let matches = App::new("faster2")
-        .version("0.1.0")
+        .version("0.2.0")
         .author("https://github.com/angelovangel")
         .about("fast statistics and manipulation of a fastx file")
         
