@@ -10,7 +10,7 @@ use faster2;
 fn main(){
 
     let matches = App::new("faster2")
-        .version("0.2.0")
+        .version("0.3.0")
         .author("https://github.com/angelovangel")
         .about("fast statistics and manipulation of a fastx file")
         
@@ -33,6 +33,12 @@ fn main(){
             .required(false)
             .takes_value(false)
             .help("Output 'average' q-score per read"))
+
+        .arg(Arg::with_name("nx")
+            .long("nx")
+            .short('x')
+            .takes_value(true)
+            .help("Output NX value, provide the desired NX value as 0.5 for e.g. N50 [numeric]"))
         
         .arg(Arg::with_name("table")
             .long("table")
@@ -45,7 +51,7 @@ fn main(){
             .help("Path to a fastq file")
             .required(true)
             .index(1))
-        .group(ArgGroup::with_name("group").required(true).args(&["table", "len", "qual", "gc"]))
+        .group(ArgGroup::with_name("group").required(true).args(&["table", "len", "qual", "gc", "nx"]))
         .get_matches();
 	
     let infile = matches.value_of("INPUT").unwrap().to_string();
@@ -73,7 +79,32 @@ fn main(){
             println!( "{:.4}", gc_content )
         }
         process::exit(0);
+    } else if matches.is_present("nx") {
+        let nxvalue = matches
+            .value_of("nx")
+            .unwrap()
+            .parse::<f32>()
+            .expect("Failed to parse nx value");
+        match nxvalue {
+            x if (0.0..=1.0).contains(&x) => {
+                let mut lengths: Vec<i64> = Vec::new();
+                while let Some(record) = records.iter_record().unwrap() {
+                    let len = record.len() as i64;
+                    lengths.push(len);
+                }
+                let nx = faster2::get_nx(&mut lengths, 1.0 - nxvalue);
+                
+                println!("{}", nx);
+                //println!("N{}\t{}", nx_value as i16, nx);
+            }
+            _=> {
+                eprintln!("The NX value should be between 0.0 and 1.0"); 
+                process::exit(0)
+            }
+        }
+
     
+
     } else if matches.is_present("table") {
         let mut reads: i64 = 0;
         let mut bases: i64 = 0;
