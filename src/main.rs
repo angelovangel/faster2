@@ -6,6 +6,7 @@ use clap::{App, Arg, ArgGroup};
 
 use faster2;
 
+#[macro_use] extern crate prettytable;
 
 fn main(){
 
@@ -46,7 +47,12 @@ fn main(){
             .takes_value(false)
             .required(false)
             .help("Output table summary"))
-        
+        .arg(Arg::with_name("pretty")
+            .long("pretty")
+            .short('p')
+            .takes_value(false)
+            .required(false)
+            .help("pretty print table summary"))
         .arg(Arg::with_name("INPUT")
             .help("Path to a fastq file")
             .required(true)
@@ -130,7 +136,14 @@ fn main(){
         let min_len = len_vector.iter().min().unwrap();
         let max_len = len_vector.iter().max().unwrap();
 
-        println!("reads\tbases\tn_bases\tmin_len\tmax_len\tN50\tQ20_percent");
-        println!("{}\t{}\t{}\t{}\t{}\t{}\t{:.2}", reads, bases, num_n, min_len, max_len, n50, q20);
+        if matches.is_present("pretty") {
+            let table = table!( 
+                ["reads", "bases", "nbases", "min_len", "max_len", "N50", "Q20_percent"],
+                [reads, bases, num_n, min_len, max_len, n50, format!("{:.2}", q20)]);
+            table.printstd();
+        } else {
+            println!("reads\tbases\tn_bases\tmin_len\tmax_len\tN50\tQ20_percent");
+            println!("{}\t{}\t{}\t{}\t{}\t{}\t{:.2}", reads, bases, num_n, min_len, max_len, n50, q20);
+        }
     }
 }
