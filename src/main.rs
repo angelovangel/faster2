@@ -52,7 +52,7 @@ fn main(){
             .short('p')
             .takes_value(false)
             .required(false)
-            .help("pretty print table summary"))
+            .help("pretty print table summary, works only together with the --table flag"))
         .arg(Arg::with_name("INPUT")
             .help("Path to a fastq file")
             .required(true)
