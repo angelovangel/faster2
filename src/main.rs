@@ -40,7 +40,11 @@ fn main(){
             .short('x')
             .takes_value(true)
             .help("Output NX value, provide the desired NX value as 0.5 for e.g. N50 [numeric]"))
-        
+        .arg(Arg::with_name("qyield")
+            .long("qyield")
+            .short('y')
+            .takes_value(true)
+            .help("Percent bases with Q score of x or higher (use range 1..93)"))
         .arg(Arg::with_name("table")
             .long("table")
             .short('t')
@@ -57,7 +61,7 @@ fn main(){
             .help("Path to a fastq file")
             .required(true)
             .index(1))
-        .group(ArgGroup::with_name("group").required(true).args(&["table", "len", "qual", "gc", "nx"]))
+        .group(ArgGroup::with_name("group").required(true).args(&["table", "len", "qual", "gc", "nx", "qyield"]))
         .get_matches();
 	
     let infile = matches.value_of("INPUT").unwrap().to_string();
@@ -109,6 +113,28 @@ fn main(){
             }
         }
 
+    } else if matches.is_present("qyield") {
+        let qvalue = matches
+            .value_of("qyield")
+            .unwrap().parse::<u8>()
+            .expect("Failed to parse Q score value");
+        match qvalue {
+            x if (1..=93).contains(&x) => {
+                let mut bases: i64 = 0;
+                let mut qualx: i64 = 0;
+                while let Some(record) = records.iter_record().unwrap() {
+                    bases += record.len() as i64;
+                    qualx += faster2::get_qual_bases(record.qual().as_bytes(), qvalue + 33); // 33 offset   
+                }
+                let qx = qualx as f64 / bases as f64 * 100.0;
+                println!("Q{}\t{:.2}", qvalue, qx);
+                process::exit(0)
+            }
+            _=> {
+                eprintln!("The Q score value should be between 1 and 93"); 
+                process::exit(0)
+            }
+        }
     
 
     } else if matches.is_present("table") {
