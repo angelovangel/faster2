@@ -9,4 +9,5 @@ edition = "2021"
 kseq = "0.5.0"
 clap = "3.2.25"
 prettytable-rs = "^0.10"
+indicatif = "0.17.8"
 

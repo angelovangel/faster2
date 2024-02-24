@@ -3,6 +3,8 @@ use kseq::parse_path;
 
 extern crate clap;
 use clap::{App, Arg, ArgGroup};
+use indicatif::{HumanCount, ProgressBar};
+use std::time::Duration;
 
 use faster2;
 
@@ -144,6 +146,8 @@ fn main(){
         let mut qual20: i64 = 0;
         //let mut qual30: i64 = 0;
         let mut len_vector: Vec<i64> = Vec::new();
+        let pb = ProgressBar::new_spinner();
+        pb.enable_steady_tick(Duration::from_millis(120));
 
         while let Some(record) = records.iter_record().unwrap() {
             let len = record.len() as i64;
@@ -153,6 +157,8 @@ fn main(){
             num_n += faster2::get_n_bases(record.seq().as_bytes() );
             qual20 += faster2::get_qual_bases(record.qual().as_bytes(), 53); // 33 offset
             //qual30 += get_qual_bases(record.qual().as_bytes(), 63);
+            let message = format!("Processed reads: {}", HumanCount(reads as u64).to_string());
+            pb.set_message(message);
         
         }
 
@@ -161,6 +167,7 @@ fn main(){
         let n50 = faster2::get_nx(&mut len_vector, 0.5);
         let min_len = len_vector.iter().min().unwrap();
         let max_len = len_vector.iter().max().unwrap();
+        pb.finish_and_clear();
 
         if matches.is_present("pretty") {
             let table = table!( 
