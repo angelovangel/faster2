@@ -4,6 +4,7 @@ use kseq::parse_path;
 extern crate clap;
 use clap::{App, Arg, ArgGroup};
 use indicatif::{HumanCount, HumanDuration, ProgressBar};
+use human_repr::HumanThroughput;
 use std::time::{Duration, Instant};
 use owo_colors::OwoColorize;
 
@@ -159,12 +160,13 @@ fn main(){
             num_n += faster2::get_n_bases(record.seq().as_bytes() );
             qual20 += faster2::get_qual_bases(record.qual().as_bytes(), 53); // 33 offset
             //qual30 += get_qual_bases(record.qual().as_bytes(), 63);
-            //let speed = (reads as u64).checked_div(start.elapsed().as_secs()).ok_or(1);
+            let speed = (reads as u128).checked_div(start.elapsed().as_millis()).ok_or(1);
             
             let message = format!(
                 "Processed reads: {} ({})", 
                 HumanCount(reads as u64).to_string().green(),
-                HumanDuration(start.elapsed()) 
+                (speed.unwrap_or(0)*1000).human_throughput(" reads")
+                //HumanDuration(start.elapsed()) 
                 //speed.unwrap_or(0)
             );
             pb.set_message(message);

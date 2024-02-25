@@ -11,4 +11,5 @@ clap = "3.2.25"
 prettytable-rs = "^0.10"
 indicatif = "0.17.8"
 owo-colors = "3"
+human-repr = "1"
 
