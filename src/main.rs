@@ -5,6 +5,7 @@ extern crate clap;
 use clap::{App, Arg, ArgGroup};
 use indicatif::{HumanCount, ProgressBar};
 use std::time::Duration;
+use owo_colors::OwoColorize;
 
 use faster2;
 
@@ -66,7 +67,7 @@ fn main(){
         .group(ArgGroup::with_name("group").required(true).args(&["table", "len", "qual", "gc", "nx", "qyield"]))
         .get_matches();
 	
-    let infile = matches.value_of("INPUT").unwrap().to_string();
+    let infile = matches.value_of("INPUT").unwrap();
 	let mut records = parse_path(infile).unwrap();
 	
     if matches.is_present("len") {
@@ -157,7 +158,7 @@ fn main(){
             num_n += faster2::get_n_bases(record.seq().as_bytes() );
             qual20 += faster2::get_qual_bases(record.qual().as_bytes(), 53); // 33 offset
             //qual30 += get_qual_bases(record.qual().as_bytes(), 63);
-            let message = format!("Processed reads: {}", HumanCount(reads as u64).to_string());
+            let message = format!("Processed reads: {}", HumanCount(reads as u64).to_string().green());
             pb.set_message(message);
         
         }
