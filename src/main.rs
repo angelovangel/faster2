@@ -3,7 +3,7 @@ use kseq::parse_path;
 
 extern crate clap;
 use clap::{App, Arg, ArgGroup};
-use indicatif::{HumanCount, HumanDuration, ProgressBar};
+use indicatif::{HumanCount, ProgressBar};
 use human_repr::HumanThroughput;
 use std::time::{Duration, Instant};
 use owo_colors::OwoColorize;
