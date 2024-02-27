@@ -1,4 +1,4 @@
-use std::process;
+use std::{path::Path, process};
 use kseq::parse_path;
 
 extern crate clap;
@@ -7,6 +7,7 @@ use indicatif::{HumanCount, ProgressBar};
 use human_repr::HumanThroughput;
 use std::time::{Duration, Instant};
 use owo_colors::OwoColorize;
+use serde_json::json;
 
 use faster2;
 
@@ -61,6 +62,12 @@ fn main(){
             .takes_value(false)
             .required(false)
             .help("pretty print table summary, works only together with the --table flag"))
+        .arg(Arg::with_name("json")
+            .long("json")
+            .short('j')
+            .takes_value(false)
+            .required(false)
+            .help("output summary data as json, works only together with the --table flag"))
         .arg(Arg::with_name("INPUT")
             .help("Path to a fastq file")
             .required(true)
@@ -70,7 +77,7 @@ fn main(){
 
 	let start = Instant::now();
     let infile = matches.value_of("INPUT").unwrap();
-	let mut records = parse_path(infile).unwrap();
+    let mut records = parse_path(infile).unwrap();
 	
     if matches.is_present("len") {
         while let Some(record) = records.iter_record().unwrap() {
@@ -143,6 +150,7 @@ fn main(){
     
 
     } else if matches.is_present("table") {
+        let filename = Path::new(infile).file_name().unwrap().to_str().unwrap();
         let mut reads: i64 = 0;
         let mut bases: i64 = 0;
         let mut num_n: i64 = 0;
@@ -182,12 +190,21 @@ fn main(){
 
         if matches.is_present("pretty") {
             let table = table!( 
-                ["reads", "bases", "nbases", "min_len", "max_len", "N50", "Q20_percent"],
-                [reads, bases, num_n, min_len, max_len, n50, format!("{:.2}", q20)]);
+                ["file", "reads", "bases", "nbases", "min_len", "max_len", "N50", "Q20_percent"],
+                [filename, reads, bases, num_n, min_len, max_len, n50, format!("{:.2}", q20)]);
             table.printstd();
+
+        } else if matches.is_present("json") {
+            let json = json!({
+                "file": filename, "reads": reads, "bases": bases, "num_n": num_n, 
+                "min_len": min_len, "max_len": max_len, "n50": n50, "q20": q20
+            });
+            println!("{}", json.to_string())
+            
         } else {
-            println!("reads\tbases\tn_bases\tmin_len\tmax_len\tN50\tQ20_percent");
-            println!("{}\t{}\t{}\t{}\t{}\t{}\t{:.2}", reads, bases, num_n, min_len, max_len, n50, q20);
+            println!("file\treads\tbases\tn_bases\tmin_len\tmax_len\tN50\tQ20_percent");
+            println!("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{:.2}", filename, reads, bases, num_n, min_len, max_len, n50, q20);
+            
         }
     }
 }
