@@ -5,6 +5,7 @@ extern crate clap;
 use clap::{App, Arg, ArgGroup};
 use indicatif::{HumanCount, ProgressBar};
 use human_repr::HumanThroughput;
+use prettytable::Slice;
 use std::time::{Duration, Instant};
 use owo_colors::OwoColorize;
 use serde_json::json;
@@ -62,6 +63,12 @@ fn main(){
             .takes_value(false)
             .required(false)
             .help("pretty print table summary, works only together with the --table flag"))
+        .arg(Arg::with_name("skip_header")
+            .long("skip_header")
+            .short('s')
+            .takes_value(false)
+            .required(false)
+            .help("Skip header in summary table, works only together with the --table flag"))
         .arg(Arg::with_name("json")
             .long("json")
             .short('j')
@@ -192,7 +199,13 @@ fn main(){
             let table = table!( 
                 ["file", "reads", "bases", "nbases", "min_len", "max_len", "N50", "Q20_percent"],
                 [filename, reads, bases, num_n, min_len, max_len, n50, format!("{:.2}", q20)]);
-            table.printstd();
+            if matches.is_present("skip_header") {
+                let slice = table.slice(1..);
+                slice.printstd();
+            } else {
+                table.printstd();            
+            }
+            
 
         } else if matches.is_present("json") {
             let json = json!({
@@ -202,7 +215,9 @@ fn main(){
             println!("{}", json.to_string())
             
         } else {
-            println!("file\treads\tbases\tn_bases\tmin_len\tmax_len\tN50\tQ20_percent");
+            if !matches.is_present("skip_header") {
+                println!("file\treads\tbases\tn_bases\tmin_len\tmax_len\tN50\tQ20_percent");
+            }
             println!("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{:.2}", filename, reads, bases, num_n, min_len, max_len, n50, q20);
             
         }
