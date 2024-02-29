@@ -7,7 +7,7 @@ use indicatif::{HumanCount, ProgressBar};
 use human_repr::HumanThroughput;
 use prettytable::Slice;
 use std::time::{Duration, Instant};
-use owo_colors::OwoColorize;
+use colored::Colorize;
 use serde_json::json;
 
 use faster2;
@@ -19,7 +19,7 @@ fn main(){
     let matches = App::new("faster2")
         .version("0.3.0")
         .author("https://github.com/angelovangel")
-        .about("fast statistics and manipulation of a fastx file")
+        .about("fast statistics of a fastx file")
         
         .arg(Arg::with_name("len")
             .long("len")
@@ -180,7 +180,7 @@ fn main(){
             let message = format!(
                 "Processed reads: {} ({})", 
                 HumanCount(reads as u64).to_string().green(),
-                (speed.unwrap_or(0)*1000).human_throughput(" reads")
+                (speed.unwrap_or(0)*1000).human_throughput(" reads").to_string().red()
                 //HumanDuration(start.elapsed()) 
                 //speed.unwrap_or(0)
             );
