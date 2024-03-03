@@ -1,5 +1,5 @@
 
-pub fn get_n_bases(seq: &[u8]) -> i64 {
+pub fn get_n_bases(seq: &[u8]) -> u64 {
     let mut n = 0;
     for s in seq {
         if matches!(s, &78u8 | &110u8) { // N or n
@@ -60,11 +60,11 @@ pub fn phred_gm(q: &[u8]) -> f64 {
 }
 
 
-pub fn get_nx(numbers: &mut [i64], fraction: f32) -> i64 {
+pub fn get_nx(numbers: &mut [u64], fraction: f32) -> u64 {
     numbers.sort_unstable();
 
     // half of the bases
-    let halfsum = numbers.iter().sum::<i64>() as f32 * fraction; // f32 * f32
+    let halfsum = numbers.iter().sum::<u64>() as f32 * fraction; // f32 * f32
 
     // cumsum of the sorted vector
     let cumsum = numbers
@@ -74,7 +74,7 @@ pub fn get_nx(numbers: &mut [i64], fraction: f32) -> i64 {
             Some(*sum)
         })
         .collect::<Vec<_>>();
-    let n50_index = cumsum.iter().position(|&x| x > halfsum as i64).unwrap();
+    let n50_index = cumsum.iter().position(|&x| x > halfsum as u64).unwrap();
 
     numbers[n50_index]
 }

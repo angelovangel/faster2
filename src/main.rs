@@ -116,9 +116,9 @@ fn main(){
             .expect("Failed to parse nx value");
         match nxvalue {
             x if (0.0..=1.0).contains(&x) => {
-                let mut lengths: Vec<i64> = Vec::new();
+                let mut lengths: Vec<u64> = Vec::new();
                 while let Some(record) = records.iter_record().unwrap() {
-                    let len = record.len() as i64;
+                    let len = record.len() as u64;
                     lengths.push(len);
                 }
                 let nx = faster2::get_nx(&mut lengths, 1.0 - nxvalue);
@@ -158,20 +158,20 @@ fn main(){
 
     } else if matches.is_present("table") {
         let filename = Path::new(infile).file_name().unwrap().to_str().unwrap();
-        let mut reads: i64 = 0;
-        let mut bases: i64 = 0;
-        let mut num_n: i64 = 0;
+        let mut reads: u64 = 0;
+        let mut bases: u64 = 0;
+        let mut num_n: u64 = 0;
         let mut qual20: i64 = 0;
         //let mut qual30: i64 = 0;
-        let mut len_vector: Vec<i64> = Vec::new();
+        let mut len_vector: Vec<u64> = Vec::new();
         let pb = ProgressBar::new_spinner();
         pb.enable_steady_tick(Duration::from_millis(120));
 
         while let Some(record) = records.iter_record().unwrap() {
-            let len = record.len() as i64;
+            let len = record.len() as u64;
             len_vector.push(len);
             reads += 1;
-            bases += record.len() as i64;
+            bases += record.len() as u64;
             num_n += faster2::get_n_bases(record.seq().as_bytes() );
             qual20 += faster2::get_qual_bases(record.qual().as_bytes(), 53); // 33 offset
             //qual30 += get_qual_bases(record.qual().as_bytes(), 63);
@@ -198,7 +198,10 @@ fn main(){
         if matches.is_present("pretty") {
             let table = table!( 
                 ["file", "reads", "bases", "nbases", "min_len", "max_len", "N50", "Q20_percent"],
-                [filename, reads, bases, num_n, min_len, max_len, n50, format!("{:.2}", q20)]);
+                [filename, 
+                HumanCount(reads), HumanCount(bases), 
+                HumanCount(num_n), HumanCount(*min_len), HumanCount(*max_len), 
+                HumanCount(n50), format!("{:.2}", q20)]);
             if matches.is_present("skip_header") {
                 let slice = table.slice(1..);
                 slice.printstd();
