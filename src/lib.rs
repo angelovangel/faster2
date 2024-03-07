@@ -23,6 +23,8 @@ let mut n: i64 = 0;
 
 pub fn get_qual_bases(q: &[u8], qx: u8) -> i64 {
     let mut n = 0;
+    // functional style is much slower?
+    //q.iter().filter(|x| **x >= qx).collect::<Vec<&u8>>().len() as i64
     for item in q {
         if *item >= qx {
             n += 1
@@ -46,18 +48,18 @@ pub fn qscore_probs(q: &[u8]) -> f32 {
 
 // get geometric mean from phred scores
 // not used, this is wrong
-pub fn phred_gm(q: &[u8]) -> f64 {
-    let mut phred_product = 0.;
+// pub fn phred_gm(q: &[u8]) -> f64 {
+//     let mut phred_product = 0.;
     
-    for &item in q {                       
-    let phred = *&item as f64 - 33.0;
+//     for &item in q {                       
+//     let phred = *&item as f64 - 33.0;
 
-            phred_product += phred.ln();
+//             phred_product += phred.ln();
 
-    }
-    let result = phred_product / q.len() as f64;
-    result.exp()
-}
+//     }
+//     let result = phred_product / q.len() as f64;
+//     result.exp()
+// }
 
 
 pub fn get_nx(numbers: &mut [u64], fraction: f32) -> u64 {
