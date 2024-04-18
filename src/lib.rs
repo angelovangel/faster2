@@ -38,28 +38,13 @@ pub fn get_qual_bases(q: &[u8], qx: u8) -> i64 {
 //
 pub fn qscore_probs(q: &[u8]) -> f32 {
     let mut qprob_sum = 0.0;
-    for &item in q.iter() {
+    for &item in q {
         let phred = *&item as f32 - 33.0;
         let prob = 10.0_f32.powf(-phred / 10.0);
         qprob_sum += prob
     }
     qprob_sum
 }
-
-// get geometric mean from phred scores
-// not used, this is wrong
-// pub fn phred_gm(q: &[u8]) -> f64 {
-//     let mut phred_product = 0.;
-    
-//     for &item in q {                       
-//     let phred = *&item as f64 - 33.0;
-
-//             phred_product += phred.ln();
-
-//     }
-//     let result = phred_product / q.len() as f64;
-//     result.exp()
-// }
 
 
 pub fn get_nx(numbers: &mut [u64], fraction: f32) -> u64 {
