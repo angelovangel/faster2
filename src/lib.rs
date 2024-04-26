@@ -10,8 +10,7 @@ pub fn get_n_bases(seq: &[u8]) -> u64 {
 }
 // return per read content
 pub fn get_gc_content(seq: &[u8]) -> f32 {
-    
-let mut n: i64 = 0;
+    let mut n: i64 = 0;
     for s in seq {
         if matches!(s, &103u8 | &71u8 |  &99u8 | &67u8) { //G, g, C or c
             n += 1;
@@ -19,6 +18,16 @@ let mut n: i64 = 0;
     }
         n as f32 / seq.len() as f32
     }
+
+pub fn get_gc_bases(seq: &[u8]) -> u64 {
+    let mut n: u64 = 0;
+    for s in seq {
+        if matches!(s, &103u8 | &71u8 |  &99u8 | &67u8) { //G, g, C or c
+            n += 1;
+        }
+    }
+        n
+}
 
 
 pub fn get_qual_bases(q: &[u8], qx: u8) -> i64 {

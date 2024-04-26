@@ -45,7 +45,7 @@ fn main(){
             .long("nx")
             .short('x')
             .takes_value(true)
-            .help("Output NX value, provide the desired NX value as 0.5 for e.g. N50 [numeric]"))
+            .help("Output NX value, provide the desired NX value as 0.5 for e.g. N50"))
         .arg(Arg::with_name("qyield")
             .long("qyield")
             .short('y')
@@ -165,7 +165,7 @@ fn main(){
             let mut bases: u64 = 0;
             let mut num_n: u64 = 0;
             let mut qual20: i64 = 0;
-            //let mut qual30: i64 = 0;
+            let mut gc_bases: u64 = 0;
             let mut len_vector: Vec<u64> = Vec::new();
             let pb = ProgressBar::new_spinner();
             pb.enable_steady_tick(Duration::from_millis(120));
@@ -173,13 +173,15 @@ fn main(){
             while let Some(record) = records.iter_record().unwrap() {
                 let len = record.len() as u64;
                 len_vector.push(len);
+
                 reads += 1;
                 bases += record.len() as u64;
+                gc_bases += faster2::get_gc_bases(record.seq().as_bytes());
+
                 num_n += faster2::get_n_bases(record.seq().as_bytes() );
                 qual20 += faster2::get_qual_bases(record.qual().as_bytes(), 53); // 33 offset
-                //qual30 += get_qual_bases(record.qual().as_bytes(), 63);
+                
                 let speed = (reads as u128).checked_div(start.elapsed().as_millis()).ok_or(1);
-
                 let message = format!(
                     "Processed reads: {} ({})", 
                     HumanCount(reads as u64).to_string().green(),
@@ -196,15 +198,16 @@ fn main(){
             let n50 = faster2::get_nx(&mut len_vector, 0.5);
             let min_len = len_vector.iter().min().unwrap();
             let max_len = len_vector.iter().max().unwrap();
+            let gc_content = gc_bases as f64/ bases as f64 * 100.0;
+    
             pb.finish_and_clear();
 
             if matches.is_present("pretty") {
                 let table = table!( 
-                    ["file", "reads", "bases", "nbases", "min_len", "max_len", "N50", "Q20_percent"],
-                    [filename, 
-                    HumanCount(reads), HumanCount(bases), 
-                    HumanCount(num_n), HumanCount(*min_len), HumanCount(*max_len), 
-                    HumanCount(n50), format!("{:.2}", q20)]);
+                    ["file", "reads", "bases", "nbases", "min_len", "max_len", "N50", "GC_percent", "Q20_percent"],
+                    [filename, HumanCount(reads), HumanCount(bases), 
+                    HumanCount(num_n), HumanCount(*min_len), HumanCount(*max_len), HumanCount(n50), 
+                    format!("{:.2}", gc_content), format!("{:.2}", q20)]);
                 if matches.is_present("skip_header") {
                     let slice = table.slice(1..);
                     slice.printstd();
@@ -216,15 +219,18 @@ fn main(){
             } else if matches.is_present("json") {
                 let json = json!({
                     "file": filename, "reads": reads, "bases": bases, "num_n": num_n, 
-                    "min_len": min_len, "max_len": max_len, "n50": n50, "q20": q20
+                    "min_len": min_len, "max_len": max_len, "n50": n50, "gc_percent": gc_content, "q20": q20
                 });
                 println!("{}", json.to_string())
             
             } else {
                 if !matches.is_present("skip_header") {
-                    println!("file\treads\tbases\tn_bases\tmin_len\tmax_len\tN50\tQ20_percent");
+                    println!("file\treads\tbases\tn_bases\tmin_len\tmax_len\tN50\tGC_percent\tQ20_percent");
                 }
-                println!("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{:.2}", filename, reads, bases, num_n, min_len, max_len, n50, q20);
+                println!(
+                    "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{:.2}\t{:.2}", 
+                    filename, reads, bases, num_n, min_len, max_len, n50, gc_content, q20
+                );
 
             }
         }
