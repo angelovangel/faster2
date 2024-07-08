@@ -30,13 +30,25 @@ fn find_content_in_len() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 #[test]
-fn multiple_input() -> Result<(), Box<dyn std::error::Error>> {
+fn test_multifile_input() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = Command::cargo_bin("faster2")?;
     cmd.arg("-ts").arg("tests/test.fastq").arg("tests/test2.fastq.gz");
 
     cmd.assert()
         .success()
         .stdout(predicate::str::contains("20\t15696\t0\t358"));
+
+    Ok(())
+}
+
+#[test]
+fn test_fofn_input() -> Result<(), Box<dyn std::error::Error>> {
+    let mut cmd = Command::cargo_bin("faster2")?;
+    cmd.arg("-ts").arg("tests/fofn");
+
+    cmd.assert()
+        .success()
+        .stdout(predicate::str::contains("30\t34627\t0\t165"));
 
     Ok(())
 }

@@ -339,9 +339,9 @@ checksum = "af150ab688ff2122fcef229be89cb50dd66af9e01a4ff320cc137eecc9bacc38"
 
 [[package]]
 name = "kseq"
-version = "0.5.2"
+version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c92f8d7f39cdfd249d7c29b3bf6499062d54ae8545c7b8dcb1bc4e14fb2da86f"
+checksum = "52ddfcd809bada51897edb15cf1959ea73d9696256d767a5e98fd7529d16cf67"
 dependencies = [
  "atty",
  "flate2",
