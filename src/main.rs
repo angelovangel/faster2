@@ -80,6 +80,15 @@ macro_rules! run_analysis {
                 println!( "{:.4}", gc_content )
             }
             process::exit(0);
+        
+        } else if mtch.is_present("tab") {
+            while let Some(record) = $next_expr {
+                let gc_content = faster2::get_gc_content(record.seq().as_bytes() );
+                let mean_prob = faster2::qscore_probs( record.qual().as_bytes() ) / record.len() as f32;
+                println!( "{}\t{}\t{}", record.len(), gc_content, -10.0 * mean_prob.log10() );
+            }
+            process::exit(0);
+        
         } else if mtch.is_present("nx") {
             let nxvalue = mtch
                 .value_of("nx")
@@ -229,6 +238,13 @@ fn main(){
             .required(false)
             .takes_value(false)
             .help("Output 'average' q-score per read"))
+        
+        .arg(Arg::with_name("tab")
+            .long("tab")
+            .short('b')
+            .required(false)
+            .takes_value(false)
+            .help("Output per read a tab delimited stream with: length, gc, average q-score"))
 
         .arg(Arg::with_name("nx")
             .long("nx")
@@ -270,7 +286,7 @@ fn main(){
             .multiple_values(true)
             .min_values(1)
             .index(1))
-        .group(ArgGroup::with_name("group").required(true).args(&["table", "len", "qual", "gc", "nx", "qyield"]))
+        .group(ArgGroup::with_name("group").required(true).args(&["table", "len", "qual", "gc", "tab", "nx", "qyield"]))
         .get_matches();
 
     let infiles: Vec<&str> = matches.values_of("INPUT").unwrap().collect();
